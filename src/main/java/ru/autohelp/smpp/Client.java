@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.autohelp.LogicHandler;
@@ -30,6 +31,7 @@ public class Client {
     @Value("${smpp.password}")
     private String smppPassword;
     
+    @Autowired
     private LogicHandler logicHandler;
     
     private DefaultSmppClient smppClient;

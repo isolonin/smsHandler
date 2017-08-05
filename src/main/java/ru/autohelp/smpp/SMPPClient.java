@@ -36,11 +36,11 @@ public class SMPPClient implements Callable<SMPPClientResult>{
         while(true){
             try {
                 log.info("Try connection to {}:{} with system_id {}...",
-                        config.getHost(),config.getPort(),config.getSystemId());
+                        config.getHost(),config.getPort(),config.getName());
                 SmppSession smppSession = smppClient.bind(config, new SmppSessionHandler(client));
                 result.setSmppSession(smppSession);
                 log.info("Success connection to {}:{} with system_id {}",
-                        config.getHost(),config.getPort(),config.getSystemId());
+                        config.getHost(),config.getPort(),config.getName());
 
                 ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
                 

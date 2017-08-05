@@ -4,9 +4,11 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableAsync;
 import ru.autohelp.smpp.Client;
 
 @SpringBootApplication
+@EnableAsync
 public class Run {
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(Run.class);
