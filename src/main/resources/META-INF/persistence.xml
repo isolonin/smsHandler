@@ -6,6 +6,8 @@
     <class>ru.autohelp.dbentity.AutoCity</class>
     <class>ru.autohelp.dbentity.AutoUsers</class>
     <class>ru.autohelp.dbentity.WpUsers</class>
+    <class>ru.autohelp.dbentity.AutoEvents</class>
+    <class>ru.autohelp.dbentity.AutoEventType</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/autohelp?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="autohelp"/>

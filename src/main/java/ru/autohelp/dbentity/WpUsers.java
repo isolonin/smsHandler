@@ -46,7 +46,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "WpUsers.findByUserStatus", query = "SELECT w FROM WpUsers w WHERE w.userStatus = :userStatus")
     , @NamedQuery(name = "WpUsers.findByDisplayName", query = "SELECT w FROM WpUsers w WHERE w.displayName = :displayName")})
 public class WpUsers implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,9 +74,9 @@ public class WpUsers implements Serializable {
     private String userEmail;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 0, max = 100)
     @Column(name = "user_url")
-    private String userUrl;
+    private String userUrl = "";
     @Basic(optional = false)
     @NotNull
     @Column(name = "user_registered")
@@ -85,9 +84,9 @@ public class WpUsers implements Serializable {
     private Date userRegistered;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
+    @Size(min = 0, max = 255)
     @Column(name = "user_activation_key")
-    private String userActivationKey;
+    private String userActivationKey = "";
     @Basic(optional = false)
     @NotNull
     @Column(name = "user_status")
@@ -232,6 +231,5 @@ public class WpUsers implements Serializable {
     @Override
     public String toString() {
         return "ru.autohelp.dbentity.WpUsers[ id=" + id + " ]";
-    }
-    
+    }    
 }

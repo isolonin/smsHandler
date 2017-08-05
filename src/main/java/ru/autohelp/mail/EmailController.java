@@ -28,7 +28,11 @@ public class EmailController {
     private String notifyEmailSubject;
     
     @Async
-    public void smsEmail(String to, String message){
+    public void sendEmailAsync(String to, String message){
+        sendEmail(to, message);
+    }
+        
+    public boolean sendEmail(String to, String message){
         try{
             MultiPartEmail email = new MultiPartEmail();
             email.setHostName(smtpMtaHost);
@@ -41,8 +45,10 @@ public class EmailController {
             email.setMsg(message);
             email.addTo(to);
             email.send();
+            return true;
         } catch (EmailException ex) {
             log.error(ex.getMessage());
         }
+        return false;
     }
 }

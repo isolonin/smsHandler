@@ -1,6 +1,7 @@
 package ru.autohelp;
 
 import com.cloudhopper.smpp.pdu.DeliverSm;
+import java.util.Date;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.slf4j.Logger;
@@ -9,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import ru.autohelp.dbcontrollers.AutoEventsJpaController;
 import ru.autohelp.dbcontrollers.AutoUsersJpaController;
 import ru.autohelp.dbcontrollers.BlacklistJpaController;
+import ru.autohelp.dbentity.AutoEventType;
+import ru.autohelp.dbentity.AutoEvents;
 import ru.autohelp.dbentity.AutoUsers;
 import ru.autohelp.http.SmsController;
 import ru.autohelp.mail.EmailController;
@@ -50,10 +54,12 @@ public class LogicHandler {
     
     private final BlacklistJpaController blacklistJpaController;
     private final AutoUsersJpaController autoUsersJpaController;
+    private final AutoEventsJpaController autoEventsJpaController;
 
     public LogicHandler() {
         blacklistJpaController = new BlacklistJpaController(emf);
         autoUsersJpaController = new AutoUsersJpaController(emf);
+        autoEventsJpaController = new AutoEventsJpaController(emf);
     }
     
     @Async
@@ -131,8 +137,6 @@ public class LogicHandler {
             if(dstUser.getNotificationSMS()){
                 //кол-во смс на счету у Абонента1 >= 5
                 if(srcUser.getLimitSms() >= 5){
-                    //Сайт что то записывает себе
-                    smsController.sendNotifyAsync(srcUser.getDef(), dstUser.getDef(), 4, null);
                     MegaFonSmsResponse response = smsController.sendDirectly(dstUser.getDef(), message);
                     
                     if(response != null && response.getResult().getStatus().getCode().equals(0)){
@@ -141,6 +145,8 @@ public class LogicHandler {
                             log.error("Update balance from {} to {} for {} return {}",srcUser.getLimitSms(),srcUser.getLimitSms()-5,srcUser,updateCount);
                         }
                         log.info("Send chat from {} to {} with text \"{}\"/ New balance {}",srcUser, dstUser, message, srcUser.getLimitSms());
+                        createAutoEvents(srcUser, AutoEvents.Type.SMS_CHAT, message);
+                        createAutoEvents(dstUser, AutoEvents.Type.SMS_CHAT, message);
                     }else {
                         log.warn("Error in send sms");
                         sendToEmailAndWeb(srcUser, "Отправить SMS транспортному средству "+vehicleNumberString+" не удалось вследствии ошибки на этапе отправки");
@@ -159,8 +165,31 @@ public class LogicHandler {
     }
     
     private void sendToEmailAndWeb(AutoUsers user, String message){
-        if(user != null && user.getWpUsersId() != null && user.getWpUsersId().getUserEmail() != null && user.getWpUsersId().getUserEmail().isEmpty() == false){
-            emailController.smsEmail(user.getWpUsersId().getUserEmail(), message);
-        }        
+        //Проверяем подключены ли у пользователя уведомления, и задан ли email
+        if(user != null && user.getWpUsersId() != null && 
+                user.getNotificationEmail() &&
+                user.getWpUsersId().getUserEmail() != null && user.getWpUsersId().getUserEmail().isEmpty() == false){
+            if(emailController.sendEmail(user.getWpUsersId().getUserEmail(), message)){
+                createAutoEvents(user, AutoEvents.Type.EMAIL_OTHER, message);
+            }
+        }
+        if(user != null && user.getWpUsersId() != null && user.getNotificationWeb()){
+            createAutoEvents(user, AutoEvents.Type.WEB_OTHER, message);
+        }
+    }
+    
+    private AutoEvents createAutoEvents(AutoUsers user, AutoEvents.Type type, String eventDescription){
+        AutoEvents autoEvent = new AutoEvents();
+        autoEvent.setEventDatetime(new Date());
+        autoEvent.setEventDescription(eventDescription);
+        autoEvent.setEventType(new AutoEventType(type.getId()));
+        autoEvent.setWpUsersId(user.getWpUsersId());        
+        try{
+            autoEventsJpaController.create(autoEvent);
+            return autoEvent;
+        }catch(Exception ex){
+            log.error(ex.getMessage());
+            return null;
+        }
     }
 }
