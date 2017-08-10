@@ -133,18 +133,22 @@ public class LogicHandler {
     public void sendAsChat(AutoUsers srcUser, AutoUsers dstUser, String message){
         try{
             String vehicleNumberString = dstUser.getTransportChars()+dstUser.getTransportId()+dstUser.getTransportReg();
-            //Абонент2 разрешил приём СМС
-            if(dstUser.getNotificationSMS()){
-                //кол-во смс на счету у Абонента1 >= 5
+            //Проверяем разрешил ли абонент-получатель приём смс
+            if(dstUser.getNotificationSMS()){                
+                //кол-во смс на счету у абонента-отправителя >= 5
                 if(srcUser.getLimitSms() >= 5){
+                    //отправляем смс-сообщение
                     MegaFonSmsResponse response = smsController.sendDirectly(dstUser.getDef(), message);
                     
+                    //если статус отправки успешный
                     if(response != null && response.getResult().getStatus().getCode().equals(0)){
+                        //Списивыем 5 смс сбаланса
                         int updateCount = autoUsersJpaController.updateBalance(srcUser, AutoUsers.Type.SMS, srcUser.getLimitSms()-5);
                         if(updateCount != 1){
                             log.error("Update balance from {} to {} for {} return {}",srcUser.getLimitSms(),srcUser.getLimitSms()-5,srcUser,updateCount);
                         }
                         log.info("Send chat from {} to {} with text \"{}\"/ New balance {}",srcUser, dstUser, message, srcUser.getLimitSms());
+                        //Записываем для обоих абонентов событие чат
                         createAutoEvents(srcUser, AutoEvents.Type.SMS_CHAT, message);
                         createAutoEvents(dstUser, AutoEvents.Type.SMS_CHAT, message);
                     }else {
@@ -165,6 +169,7 @@ public class LogicHandler {
     }
     
     private void sendToEmailAndWeb(AutoUsers user, String message){
+        //-------- EMAIL --------
         //Проверяем подключены ли у пользователя уведомления, и задан ли email
         if(user != null && user.getWpUsersId() != null && 
                 user.getNotificationEmail() &&
@@ -173,6 +178,7 @@ public class LogicHandler {
                 createAutoEvents(user, AutoEvents.Type.EMAIL_OTHER, message);
             }
         }
+        //-------- SMS --------
         if(user != null && user.getWpUsersId() != null && user.getNotificationWeb()){
             createAutoEvents(user, AutoEvents.Type.WEB_OTHER, message);
         }

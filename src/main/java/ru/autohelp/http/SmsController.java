@@ -82,15 +82,16 @@ public class SmsController {
             if(message != null){
                 sb.append("&event_description=");
                 sb.append(URLEncoder.encode(message,"UTF-8"));
-            }           
+            }
             
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(sb.toString());
             log.info("Send: {}",request.toString());
             HttpResponse response = httpClient.execute(request);
-            String responseString = getContextFromResponse(response);            
+            String responseString = getContextFromResponse(response);
             log.info("Recv local: {} ({})",response.getStatusLine(), responseString);
-            return true;
+            
+            return response.getStatusLine().getStatusCode() == 220;
         }catch(Exception ex){
             log.error(ex.getMessage());
         }
