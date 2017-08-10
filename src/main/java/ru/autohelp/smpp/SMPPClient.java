@@ -11,8 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import ru.autohelp.models.SMPPClientResult;
 
 /**
@@ -20,7 +19,7 @@ import ru.autohelp.models.SMPPClientResult;
  * @author ivan
  */
 public class SMPPClient implements Callable<SMPPClientResult>{
-    private static final Logger log = LoggerFactory.getLogger(SMPPClient.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     private final SmppClient smppClient;
     private final SmppSessionConfiguration config;
     private final Client client;

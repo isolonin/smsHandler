@@ -3,8 +3,7 @@ package ru.autohelp.mail;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailController {
-    private final Logger log = LoggerFactory.getLogger(EmailController.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     @Value("${smtp.mta.host}")
     private String smtpMtaHost;
     @Value("${smtp.mta.port}")

@@ -7,8 +7,7 @@ import com.cloudhopper.smpp.type.LoggingOptions;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ import ru.autohelp.models.SMPPClientResult;
  */
 @Component
 public class Client {
-    private static final Logger log = LoggerFactory.getLogger(Client.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     @Value("${smpp.host}")
     private String smppHost;
     @Value("${smpp.port}")

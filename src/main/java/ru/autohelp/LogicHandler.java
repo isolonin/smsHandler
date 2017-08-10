@@ -4,8 +4,8 @@ import com.cloudhopper.smpp.pdu.DeliverSm;
 import java.util.Date;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -28,7 +28,7 @@ import static ru.vehicleutils.utils.Utils.getVehicleNumberByText;
  */
 @Component
 public class LogicHandler {
-    private final Logger log = LoggerFactory.getLogger(LogicHandler.class);
+    private static Logger log = LogManager.getLogger();
     
     @Autowired
     private SmsController smsController;

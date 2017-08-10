@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import ru.autohelp.models.PartsContainer;
 
 /**
@@ -19,7 +18,7 @@ import ru.autohelp.models.PartsContainer;
  * @author isolonin
  */
 public class SmBuilder {
-    private final Logger log = LoggerFactory.getLogger(SmBuilder.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     
     //Коллекция сообщений формата количество частей = контенер
     private Map<Integer, PartsContainer> partsCollection = new HashMap<>();

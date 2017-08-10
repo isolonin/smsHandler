@@ -7,16 +7,15 @@ import com.cloudhopper.smpp.type.RecoverablePduException;
 import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppTimeoutException;
 import com.cloudhopper.smpp.type.UnrecoverablePduException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author isolonin
  */
 public class EnquireLinkHandler implements Runnable{
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     private SmppSession smppSession;
-    private final Logger log = LoggerFactory.getLogger(EnquireLinkHandler.class);
     
     public EnquireLinkHandler(SmppSession session) {
         this.smppSession = session;

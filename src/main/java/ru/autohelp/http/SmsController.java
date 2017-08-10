@@ -14,9 +14,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -30,7 +29,7 @@ import ru.autohelp.models.MegaFonSms;
  */
 @Component
 public class SmsController {
-    private final Logger log = LoggerFactory.getLogger(SmsController.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     @Value("${notify.local.path}")
     private String notifyLocalPath;
     @Value("${sms.megafon.path}")

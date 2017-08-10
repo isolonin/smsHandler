@@ -7,8 +7,7 @@ import com.cloudhopper.smpp.pdu.DeliverSm;
 import com.cloudhopper.smpp.pdu.PduRequest;
 import com.cloudhopper.smpp.pdu.PduResponse;
 import com.cloudhopper.smpp.util.SmppUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import ru.autohelp.utils.SmBuilder;
 
 /**
@@ -16,7 +15,7 @@ import ru.autohelp.utils.SmBuilder;
  * @author ivan
  */
 public class SmppSessionHandler extends DefaultSmppSessionHandler{
-    private static final Logger log = LoggerFactory.getLogger(SmppSessionHandler.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger();
     private final Client client;
     private final SmBuilder smBuilder;
 
