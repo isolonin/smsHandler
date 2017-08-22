@@ -62,8 +62,8 @@ public class SmppSessionHandler extends DefaultSmppSessionHandler{
                     switch(deliverSm.getDataCoding()){
                         case SmppConstants.DATA_CODING_UCS2:
                             //only for test
-                            text = new String(deliverSm.getShortMessage());
-    //                        text = CharsetUtil.decode(deliverSm.getShortMessage(), "UCS-2");
+//                            text = new String(deliverSm.getShortMessage());
+                            text = CharsetUtil.decode(deliverSm.getShortMessage(), "UCS-2");
                             break;
                         case SmppConstants.DATA_CODING_DEFAULT:
                             text = CharsetUtil.decode(deliverSm.getShortMessage(), "GSM");                            

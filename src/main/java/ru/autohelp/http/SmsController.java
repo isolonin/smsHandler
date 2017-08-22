@@ -40,18 +40,18 @@ public class SmsController {
     private String smsMegafonSrc;
     
     //curl -X POST -H "Content-Type: application/json" -H 'Authorization: Basic Q05UX2N5YmVyc3Q6b2hlVnVwa3U=' -d '{"from":"112-24.ru","to":79200014949,"message":"Тест. Сообщения работают"}' 'https://a2p-api.megalabs.ru/sms/v1/sms'
-    public MegaFonSmsResponse sendDirectly(String to, String message){
+    public MegaFonSmsResponse sendDirectly(Long to, String message){
         try{
             log.info("Send message \"{}\" from \"{}\" to \"{}\"",message, smsMegafonSrc, to);
             HttpClient httpClient = HttpClientBuilder.create().build();
             MegaFonSms sms = new MegaFonSms(smsMegafonSrc, to, message);
             JSONObject smsJson = new JSONObject(sms);
             HttpPost post = new HttpPost(smsMegafonPath);
-            post.addHeader("Content-Type", "application/json");
+            post.addHeader("Content-Type", "application/json; charset=utf-8");
             post.addHeader("Authorization", "Basic "+smsMegafonToken);
-            post.setEntity(new StringEntity(smsJson.toString()));
+            post.setEntity(new StringEntity(smsJson.toString(), "UTF-8"));
             
-            log.info("Send: {}",post.toString());
+            log.info("Send: {}:\n{}",post.toString(),smsJson.toString());
             HttpResponse response = httpClient.execute(post);
             String responseString = getContextFromResponse(response);
             

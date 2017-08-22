@@ -2,6 +2,7 @@ package ru.autohelp;
 
 import com.cloudhopper.smpp.pdu.DeliverSm;
 import java.util.Date;
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ import ru.autohelp.dbentity.AutoUsers;
 import ru.autohelp.http.SmsController;
 import ru.autohelp.mail.EmailController;
 import ru.autohelp.model.megafon.MegaFonSmsResponse;
+import ru.autohelp.utils.Common;
 import ru.vehicleutils.models.VehicleNumber;
 import static ru.vehicleutils.utils.Utils.getVehicleNumberByText;
 
@@ -55,6 +57,17 @@ public class LogicHandler {
     private final BlacklistJpaController blacklistJpaController;
     private final AutoUsersJpaController autoUsersJpaController;
     private final AutoEventsJpaController autoEventsJpaController;
+    
+    @PostConstruct
+    public void init(){
+        smsTextInvalidformat = Common.latin1ToUtf8(smsTextInvalidformat);
+        smsTextInvalidformatUnreg = Common.latin1ToUtf8(smsTextInvalidformatUnreg);
+        smsTextEmptyreg = Common.latin1ToUtf8(smsTextEmptyreg);
+        smsTextEmptyregUnreg = Common.latin1ToUtf8(smsTextEmptyregUnreg);
+        smsTextDstUnreg = Common.latin1ToUtf8(smsTextDstUnreg);
+        smsTextDstunregUnreg = Common.latin1ToUtf8(smsTextDstunregUnreg);
+        smsTextChatEmpty = Common.latin1ToUtf8(smsTextChatEmpty);
+    }
 
     public LogicHandler() {
         blacklistJpaController = new BlacklistJpaController(emf);
@@ -62,14 +75,28 @@ public class LogicHandler {
         autoEventsJpaController = new AutoEventsJpaController(emf);
     }
     
+    private Long stringToLong(String value){
+        Long result = null;
+        try{
+            result = new Long(value);
+        }catch(NumberFormatException ex){
+            log.error("String {} can't be long", value);
+        }
+        return result;
+    }
+    
     @Async
     public void smsHandle(DeliverSm deliverSm, String text){
-        String srcMsisdn = deliverSm.getSourceAddress().getAddress();
-        if(blacklistJpaController.findBlacklist(srcMsisdn) != null){
+        Long srcMsisdn = stringToLong(deliverSm.getSourceAddress().getAddress());
+        if(srcMsisdn == null){
+            return;
+        }
+        
+        if(blacklistJpaController.findBlacklist(srcMsisdn.toString()) != null){
             log.warn("Number {} in blacklist", srcMsisdn);
             return;
         }
-        AutoUsers srcUser = autoUsersJpaController.findByMsisdn(srcMsisdn);
+        AutoUsers srcUser = autoUsersJpaController.findByMsisdn(srcMsisdn.toString());
         VehicleNumber vehicleNumber = getVehicleNumberByText(text);
         if(vehicleNumber == null || vehicleNumber.getTextTail() == null || vehicleNumber.getTextTail().isEmpty()){
             if(srcUser != null){
@@ -106,13 +133,13 @@ public class LogicHandler {
         String message = vehicleNumber.getTextTail().replaceAll("^[1-4]\\s?(.*)", "$1");
         switch(type){
             case "1":
-                smsController.sendNotifyAsync(srcMsisdn, deliverSm.getDestAddress().getAddress(), 1, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 1, message);
                 break;
             case "2":
-                smsController.sendNotifyAsync(srcMsisdn, deliverSm.getDestAddress().getAddress(), 2, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 2, message);
                 break;
             case "3":
-                smsController.sendNotifyAsync(srcMsisdn, deliverSm.getDestAddress().getAddress(), 3, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 3, message);
                 break;
             case "4":
                 if(message != null && message.isEmpty() == false){
@@ -138,7 +165,11 @@ public class LogicHandler {
                 //кол-во смс на счету у абонента-отправителя >= 5
                 if(srcUser.getLimitSms() >= 5){
                     //отправляем смс-сообщение
-                    MegaFonSmsResponse response = smsController.sendDirectly(dstUser.getDef(), message);
+                    Long to = stringToLong(dstUser.getDef());
+                    if(to == null){
+                        return;
+                    }
+                    MegaFonSmsResponse response = smsController.sendDirectly(to, message);
                     
                     //если статус отправки успешный
                     if(response != null && response.getResult().getStatus().getCode().equals(0)){

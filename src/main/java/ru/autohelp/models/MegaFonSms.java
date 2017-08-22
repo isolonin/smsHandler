@@ -6,10 +6,10 @@ package ru.autohelp.models;
  */
 public class MegaFonSms {
     private final String from;
-    private final String to;
+    private final Long to;
     private final String message;
 
-    public MegaFonSms(String from, String to, String message) {
+    public MegaFonSms(String from, Long to, String message) {
         this.from = from;
         this.to = to;
         this.message = message;
@@ -19,7 +19,7 @@ public class MegaFonSms {
         return from;
     }
 
-    public String getTo() {
+    public Long getTo() {
         return to;
     }
 
