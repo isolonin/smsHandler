@@ -1,5 +1,6 @@
 package ru.autohelp.smpp;
 
+import com.cloudhopper.commons.util.NamingThreadFactory;
 import com.cloudhopper.smpp.SmppBindType;
 import com.cloudhopper.smpp.SmppSessionConfiguration;
 import com.cloudhopper.smpp.impl.DefaultSmppClient;
@@ -48,12 +49,13 @@ public class Client {
         config.setType(SmppBindType.RECEIVER);
         config.setHost(smppHost);
         config.setPort(new Integer(smppPort));
+        config.setSystemId(smppLogin);
         config.setName(smppLogin);
         config.setPassword(smppPassword);
         config.setBindTimeout(30000);
         config.setConnectTimeout(30000);
         
-        connectionResultFuture = Executors.newSingleThreadExecutor().submit(new SMPPClient(smppClient, config, this));
+        connectionResultFuture = Executors.newSingleThreadExecutor(new NamingThreadFactory("SMPPClient")).submit(new SMPPClient(smppClient, config, this));
     }
     
     public void reconnect(){
