@@ -133,13 +133,13 @@ public class LogicHandler {
         String message = vehicleNumber.getTextTail().replaceAll("^[1-4]\\s?(.*)", "$1");
         switch(type){
             case "1":
-                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 1, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), dstUser.getDef(), 1, message);
                 break;
             case "2":
-                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 2, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), dstUser.getDef(), 2, message);
                 break;
             case "3":
-                smsController.sendNotifyAsync(srcMsisdn.toString(), deliverSm.getDestAddress().getAddress(), 3, message);
+                smsController.sendNotifyAsync(srcMsisdn.toString(), dstUser.getDef(), 3, message);
                 break;
             case "4":
                 if(message != null && message.isEmpty() == false){
