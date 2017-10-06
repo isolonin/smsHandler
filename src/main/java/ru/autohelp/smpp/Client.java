@@ -52,8 +52,8 @@ public class Client {
         config.setSystemId(smppLogin);
         config.setName(smppLogin);
         config.setPassword(smppPassword);
-        config.setBindTimeout(30000);
-        config.setConnectTimeout(30000);
+        config.setBindTimeout(5000);
+        config.setConnectTimeout(5000);
         
         connectionResultFuture = Executors.newSingleThreadExecutor(new NamingThreadFactory("SMPPClient")).submit(new SMPPClient(smppClient, config, this));
     }
